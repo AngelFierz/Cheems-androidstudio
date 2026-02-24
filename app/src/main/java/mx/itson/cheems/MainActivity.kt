@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
         Toast.makeText(this, "Bienvenido oullea", Toast.LENGTH_LONG).show()
+
+        start()
     }
 
     @SuppressLint("DiscouragedApi")
