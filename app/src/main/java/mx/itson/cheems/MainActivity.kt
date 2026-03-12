@@ -1,6 +1,7 @@
 package mx.itson.cheems
 
-import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -15,11 +16,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import mx.itson.cheems.entities.Winner
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     var gameOverCard = 0
-    var masterCard = 0
+    var chemsMasterCard = 0
+    var cardsOpened = 0
+    var isGameOver = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,88 +39,151 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnRestart.setOnClickListener(this)
 
 
+        //Winner().save(this, "Pedro Marmol", "UnusualToilet")
+        //Winner().getAll(this)
 
-        Toast.makeText(this, "Bienvenido oullea", Toast.LENGTH_LONG).show()
+        val btnNewWinner = findViewById<View>(R.id.btn_winner) as Button
+        btnNewWinner.setOnClickListener(this)
+
+        Toast.makeText(this, R.string.welcome, Toast.LENGTH_LONG).show()
 
         start()
     }
 
-    @SuppressLint("DiscouragedApi")
+    fun hideNewWinnerBtn (){
+        val btnNewWinner = findViewById<View>(R.id.btn_winner) as Button
+        btnNewWinner.visibility = View.GONE
+    }
+
+    fun showNewWinnerBtn (){
+        val btnNewWinner = findViewById<View>(R.id.btn_winner) as Button
+        btnNewWinner.visibility = View.VISIBLE
+    }
+
     fun start() {
+        cardsOpened = 0
+        isGameOver = false
+
+        hideNewWinnerBtn()
+
         for (i in 1..12) {
             val btnCard = findViewById<ImageButton>(
                 resources.getIdentifier("card$i", "id", this.packageName)
             )
-
             btnCard.setOnClickListener(this)
             btnCard.setBackgroundResource(R.drawable.cheems_question)
+            btnCard.isEnabled = true
         }
 
         gameOverCard = (1..12).random()
-        Log.d("Valor de la carta perdedora", "La carta perdedora es $gameOverCard")
-        masterCard = (1..12).random()
-        //  Log.d("Test", "blablablablab $masterCard")
-        Log.d("Valor de la carta master", "La carta cool es $masterCard")
+        Log.d("Valor de la carta perdedora", "la carta perdedora es $gameOverCard")
 
+        chemsMasterCard = (1..12).random()
+        while (chemsMasterCard == gameOverCard) {
+            chemsMasterCard = (1..12).random()
+        }
+        Log.d("Valor de la carta ganadora", "CheemsMaster se esconde en $chemsMasterCard")
     }
 
-
-    fun vibracion(ms: Long) {
+    fun vibrate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // si la version del telefono es igual o mayor a Android 12 (API 31)
-            val vibratorAdmin =
-                applicationContext.getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val vibratorAdmin = applicationContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             val vibrator = vibratorAdmin.defaultVibrator
-            vibrator.vibrate(
-                VibrationEffect.createOneShot(
-                    1500,
-                    VibrationEffect.DEFAULT_AMPLITUDE
-                )
-            )
+            vibrator.vibrate(VibrationEffect.createOneShot(1500, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
             val vibrator = applicationContext.getSystemService(VIBRATOR_SERVICE) as Vibrator
             vibrator.vibrate(1500)
         }
     }
 
-    fun flip(card: Int) {
-        if (card == masterCard) {
-            Toast.makeText(this, "Bueno tu ganas toma tu like :p", Toast.LENGTH_LONG).show()
-            vibracion(1500)
-            for (i in 1..12) {
-                val btnCard = findViewById<ImageButton>(
-                    resources.getIdentifier("card$i", "id", this.packageName)
-                )
-                if (i == card) {
-                    btnCard.setBackgroundResource(R.drawable.cheems_master)
-                } else {
-                    btnCard.setBackgroundResource(R.drawable.cheems_ok)
-                }
+    fun loose(card: Int) {
+        isGameOver = true
+        vibrate()
+        Toast.makeText(this, R.string.loose, Toast.LENGTH_LONG).show()
+
+        for (i in 1..12) {
+            val btnCard = findViewById<ImageButton>(
+                resources.getIdentifier("card$i", "id", this.packageName)
+            )
+            if (i == gameOverCard) {
+                btnCard.setBackgroundResource(R.drawable.cheems_bad)
+            } else if (i == chemsMasterCard) {
+                btnCard.setBackgroundResource(R.drawable.cheems_master)
+            } else {
+                btnCard.setBackgroundResource(R.drawable.cheems_ok)
             }
-        } else if (card == gameOverCard) {
-
-
-            Toast.makeText(this, "Perdiste jajajajfjfjjj mensoo", Toast.LENGTH_LONG).show()
-
-            for (i in 1..12) {
-                val btnCard = findViewById<ImageButton>(
-                    resources.getIdentifier("card$i", "id", this.packageName)
-                )
-                if (i == card) {
-                    btnCard.setBackgroundResource(R.drawable.cheems_bad)
-                } else {
-                    btnCard.setBackgroundResource(R.drawable.cheems_ok)
-                }
-            }
+            btnCard.isEnabled = false
+        }
     }
 
-}
+    fun win() {
+        isGameOver = true
+        vibrate()
+        Toast.makeText(this, R.string.win, Toast.LENGTH_LONG).show()
 
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.restart -> {
-                start()
+        for (i in 1..12) {
+            val btnCard = findViewById<ImageButton>(
+                resources.getIdentifier("card$i", "id", this.packageName)
+            )
+            if (i == chemsMasterCard) {
+                btnCard.setBackgroundResource(R.drawable.cheems_master)
+            } else if (i == gameOverCard) {
+                btnCard.setBackgroundResource(R.drawable.cheems_bad)
+            } else {
+                btnCard.setBackgroundResource(R.drawable.cheems_ok)
             }
+            btnCard.isEnabled = false
+        }
+        showNewWinnerBtn()
+    }
+
+    fun winCheems(card: Int) {
+        isGameOver = true
+        vibrate()
+        Toast.makeText(this, R.string.foundCheemsMaster, Toast.LENGTH_LONG).show()
+
+        for (i in 1..12) {
+            val btnCard = findViewById<ImageButton>(
+                resources.getIdentifier("card$i", "id", this.packageName)
+            )
+            if (i == chemsMasterCard) {
+                btnCard.setBackgroundResource(R.drawable.cheems_master)
+            } else if (i == gameOverCard) {
+                btnCard.setBackgroundResource(R.drawable.cheems_bad)
+            } else {
+                btnCard.setBackgroundResource(R.drawable.cheems_ok)
+            }
+            btnCard.isEnabled = false
+        }
+        showNewWinnerBtn()
+    }
+
+    fun flip(card: Int) {
+        if (isGameOver) return
+
+        if (card == gameOverCard) {
+            loose(card)
+        } else if (card == chemsMasterCard) {
+            winCheems(card)
+        } else {
+            val btnCard = findViewById<ImageButton>(
+                resources.getIdentifier("card$card", "id", this.packageName)
+            )
+            if (btnCard.isEnabled) {
+                btnCard.setBackgroundResource(R.drawable.cheems_ok)
+                btnCard.isEnabled = false
+                cardsOpened++
+
+                if (cardsOpened == 10) {
+                    win()
+                }
+            }
+        }
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.restart -> { start() }
             R.id.card1 -> flip(1)
             R.id.card2 -> flip(2)
             R.id.card3 -> flip(3)
@@ -129,7 +196,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.card10 -> flip(10)
             R.id.card11 -> flip(11)
             R.id.card12 -> flip(12)
+            R.id.btn_winner -> {
+                val intentWinnerForm = Intent(this, WinnerFormActivity::class.java)
+                startActivity(intentWinnerForm)
+            }
         }
-
     }
 }

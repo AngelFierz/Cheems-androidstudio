@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Cheems</string>
     <string name="Test">Test</string>
+    <string name="form_name">Nombre</string>
+    <string name="form_nickname">Apodo:</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_winner">Registrate</string>
+    <string name="loose">LCPD YOU LOSE!!!!!!!!!</string>
+    <string name="register_saved">The register was saved</string>
+    <string name="welcome">Bienvenido</string>
+    <string name="foundCheemsMaster">HEYY YOU FOUND CHEEMS MASTER</string>
+    <string name="win">Ganaste, wow...</string>
 </resources>

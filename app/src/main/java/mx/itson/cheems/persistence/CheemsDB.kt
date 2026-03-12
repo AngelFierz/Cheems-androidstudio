@@ -16,7 +16,9 @@ class CheemsDB(
 
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
        try {
-           sqLiteDatabase.execSQL("Create Table Winner" (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, nickname Text))
+           sqLiteDatabase.execSQL(
+               "CREATE TABLE Winner (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, nickname TEXT)"
+           )
        } catch (ex: Exception){
            Log.e("Error al crear la base de datos", ex.message.toString())
        }
