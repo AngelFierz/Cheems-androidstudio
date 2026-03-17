@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import mx.itson.cheems.entities.Winner
+import mx.itson.cheems.persistence.WinnerListActivity
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -45,17 +46,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val btnNewWinner = findViewById<View>(R.id.btn_winner) as Button
         btnNewWinner.setOnClickListener(this)
 
+        val btnListWinner = findViewById<View>(R.id.btn_list_winner) as Button
+        btnListWinner.setOnClickListener(this)
+
         Toast.makeText(this, R.string.welcome, Toast.LENGTH_LONG).show()
 
         start()
     }
 
-    fun hideNewWinnerBtn (){
+    fun hideNewWinnerBtn() {
         val btnNewWinner = findViewById<View>(R.id.btn_winner) as Button
         btnNewWinner.visibility = View.GONE
     }
 
-    fun showNewWinnerBtn (){
+    fun showNewWinnerBtn() {
         val btnNewWinner = findViewById<View>(R.id.btn_winner) as Button
         btnNewWinner.visibility = View.VISIBLE
     }
@@ -87,7 +91,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     fun vibrate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorAdmin = applicationContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val vibratorAdmin =
+                applicationContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             val vibrator = vibratorAdmin.defaultVibrator
             vibrator.vibrate(VibrationEffect.createOneShot(1500, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
@@ -183,7 +188,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.restart -> { start() }
+            R.id.restart -> {
+                start()
+            }
+
             R.id.card1 -> flip(1)
             R.id.card2 -> flip(2)
             R.id.card3 -> flip(3)
@@ -199,6 +207,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn_winner -> {
                 val intentWinnerForm = Intent(this, WinnerFormActivity::class.java)
                 startActivity(intentWinnerForm)
+            }
+
+            R.id.btn_list_winner -> {
+                val intentWinnerList = Intent(this, WinnerListActivity::class.java)
+                startActivity(intentWinnerList)
             }
         }
     }
